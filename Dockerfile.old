@@ -1,0 +1,22 @@
+from rocker/tidyverse
+
+
+## TODO: remove this hack which is here because in our current config you run as root rather than jovyan
+RUN rm -r /root
+RUN ln -s /home/jovyan /root
+
+
+RUN apt-get update
+RUN apt-get install python3.8 python3-pip -y
+RUN pip3 install jupyter jupyterlab jupyterhub jupyter-server-proxy
+
+
+
+
+# Add prepare script for copying examples dir to single user homespaces.
+COPY runner.sh /usr/bin/runner.sh
+RUN chmod +x /usr/bin/runner.sh
+
+SHELL ["/bin/bash", "-c"]
+ENTRYPOINT ["/usr/bin/runner.sh"]   
+# CMD ["bash" ,"-c", "jupyterhub-singleuser & /init"]
